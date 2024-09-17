@@ -45,6 +45,8 @@ else()
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /LTCG /NOLOGO")
 endif(NOT MSVC)
 
+add_subdirectory(examples)
+
 # Local Variables:
 # tab-width: 8
 # mode: cmake

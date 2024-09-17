@@ -1,0 +1,25 @@
+find_package(OpenGL)
+
+find_package(GLUT)
+if (GLUT_FOUND AND OPENGL_FOUND)
+	add_executable(M33GLUT MC33_GLUT.cpp)
+	target_link_libraries(M33GLUT ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES})
+	if (TARGET M33)
+		target_link_libraries(M33GLUT M33)
+	elseif (TARGET M33static)
+		target_link_libraries(M33GLUT M33static)
+	endif (TARGET M33)
+endif()
+
+find_package(FLTK)
+if (FLTK_FOUND AND OPENGL_FOUND)
+	add_executable(M33FLTK MC33_FLTK.cpp)
+	target_link_libraries(M33FLTK ${FLTK_LIBRARIES} ${OPENGL_LIBRARIES})
+	if (TARGET M33)
+		target_link_libraries(M33FLTK M33)
+	elseif (TARGET M33static)
+		target_link_libraries(M33FLTK M33static)
+	endif (TARGET M33)
+endif()
+
+
