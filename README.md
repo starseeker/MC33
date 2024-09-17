@@ -1,7 +1,3 @@
-### Feel free to use the MC33++ library.
-
----
-
 #### INFO:
 
 MC33++ library version 5.2
@@ -11,30 +7,9 @@ Vega, D., Abache, J., Coll, D., [A Fast and Memory-Saving Marching Cubes 33 impl
 
 The MC33 library is an open source software. The distribution and use rights are under the terms of the [MIT license](https://opensource.org/licenses/MIT), described in the file "LICENSE.txt".
 
+This fork defines a CMake build system for MC33++.
 
 ![FLTK example](https://repository-images.githubusercontent.com/469939412/decb05bb-c9dc-4019-96bc-11f1f6dee8c8 "Screenshot of the FLTK example")
-
----
-
-#### FILES:
-
-- Makefile (Linux or MinGW/msys GCC makefile)
-- MakefileMSVC.mak (NMAKE makefile)
-- compileMSVC.bat (batch script to compile with visual c++)
-- include/MC33.h (header file)
-- source/MC33.cpp (MC33 class code)
-- source/grid3D.cpp (grid3D class code)
-- source/surface.cpp (surface class code)
-- source/MC33_LookUpTable.h (Triangulation pattern for each MC33 case)
-- source/libMC33++.cpp (source file used to compile the library)
-- FLTK_example/TestMC33.cpp (Example of use. FLTK library is required)
-- FLTK_example/makefileMinGW-w64.mak (MinGW/msys GCC makefile)
-- FLTK_example/makefiledebian.mak (Debian GCC makefile)
-- GLUT_example/TestMC33_glut.cpp (Example of use. GLUT or FREEGLUT library is required)
-- GLUT_example/makefileMinGW-w64.mak (MinGW/msys GCC makefile)
-- GLUT_example/makefiledebian.mak (Debian GCC makefile)
-
-The visualc folder contains the solution and project files to compile the library with Visual Studio 2019 Community.
 
 ---
 
@@ -71,50 +46,7 @@ There are 4 options that can be modified before compiling the library. You can d
 	#define MC_Normal_neg
 	```
 
----
-
-#### INSTALLING:
-
-1. Compile the libMC33++.cpp file as a static C++ library:
-	- A GCC makefile is supplied with the library. In a Linux terminal or in msys2 mingw console go to the folder where the Makefile file is, and type: make
-	- If you are using Visual Studio, open the visualc/MC33++.sln file with the Visual Studio IDE, select the appropriated configuration (eg. release x64) and build the project. If you don't want to open the Visual Studio IDE, you can run the compileMSVC.bat script from file explorer.
-
-	Once the library is compiled copy the libMC33++.a (or MC33++.lib) from the local lib directory to the compiler lib directory. Also copy the MC33.h file from the local include directory to the compiler include directory.
-
-	Include the header file in your C++ code:
-	```c
-	#include <MC33.h>
-	```
-	and put in the linker options of your program makefile: -lMC33++
-
-
-2. Instead of compiling the library, you can directly include the library code files in your code (see the FLTK or the GLUT example code). Put at the beginning of your C++ code:
-	```c
-	#include "..Path../source/MC33.cpp"
-	#include "..Path../source/grid3d.cpp"
-	#include "..Path../source/surface.cpp"
-	```
-
----
-
-#### COMPILING THE EXAMPLES:
-
-In Debian terminal window, go to the FLTK_example or GLUT_example folder and write:
-```sh
-make -f makefiledebian.mak
-```
-
-Or in a msys2 MinGW64 Shell (Windows), write:
-```sh
-make -f makefileMinGW-w64.mak
-```
-
-For the FLTK example in any operating system you also can use the fltk-config script:
-```sh
-path/fltk-1.X.Y/fltk-config --compile TestMC33.cpp
-```
-
-The makefiles use the -Ofast optimization option and the fltk-config script uses a lower optimization level.
+#### RUNNING THE EXAMPLES:
 
 In the GLUT example, the file containing the grid must be passed to the program on the command line, and no other grid files can be read from the running program. The grid file can be dragged and dropped into the executable in the Windows File Explorer. Examples of usage of the `generate_grid_from_fn` function of the grid3d class were included in this code, and are available if the grid file is not specified.
 
