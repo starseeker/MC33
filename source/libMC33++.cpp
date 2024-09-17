@@ -9,10 +9,6 @@ Only this file must be included in a project to compile the MC33 library
 */
 
 #define compiling_libMC33
-/********************************CUSTOMIZING**********************************/
-//The following line can be only changed before compiling the library:
-//#define MC_Normal_neg // the front and back surfaces are exchanged.
-/*****************************************************************************/
 
 #include "../include/MC33.h"
 

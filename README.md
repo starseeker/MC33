@@ -41,11 +41,6 @@ There are 4 options that can be modified before compiling the library. You can d
 	#define MC33_double_precision 1 // double type for MC33 class members
 	```
 
-4. If you need to exchange the front and back surfaces, define MC_Normal_neg (libMC33++.cpp):
-	```c
-	#define MC_Normal_neg
-	```
-
 #### RUNNING THE EXAMPLES:
 
 In the GLUT example, the file containing the grid must be passed to the program on the command line, and no other grid files can be read from the running program. The grid file can be dragged and dropped into the executable in the Windows File Explorer. Examples of usage of the `generate_grid_from_fn` function of the grid3d class were included in this code, and are available if the grid file is not specified.

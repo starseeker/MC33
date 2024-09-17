@@ -800,11 +800,7 @@ void MC33::find_case(unsigned int x, unsigned int y, unsigned int z, unsigned in
 		}
 	    }
 	    unsigned int *vp = S->T[S->nT++].v;
-#ifndef MC_Normal_neg
 	    *vp = ti[n]; *(++vp) = ti[m]; *(++vp) = ti[2];
-#else
-	    *vp = ti[m]; *(++vp) = ti[n]; *(++vp) = ti[2];
-#endif
 	}
     }
 }
@@ -1299,19 +1295,11 @@ void MC33::clear_temp_isosurface() {
 	}\
     }
 
-#ifndef MC_Normal_neg
 #define code_in_define_part02\
     MC33_real t = invSqrt(r[0]*r[0] + r[1]*r[1] + r[2]*r[2]);\
     float *q = S->N[nv].v;\
     *q = t * *r; *(++q) = t * *(++r); *(++q) = t * *(++r);\
     return nv;
-#else //MC_Normal_neg reverses the direction of the normal
-#define code_in_define_part02\
-    MC33_real t = -invSqrt(r[0]*r[0] + r[1]*r[1] + r[2]*r[2]);\
-    float *q = S->N[nv].v;\
-    *q = t * *r; *(++q) = t * *(++r); *(++q) = t * *(++r);\
-    return nv;
-#endif
 
 int MC33::set_grid3d(grid3d &G) {
     clear_temp_isosurface();
