@@ -99,7 +99,7 @@ versa, respectively. If the grid is periodic (is infinitely repeated along each
 dimension) the flag periodic must be different from 0.
 */
 class grid3d {
-private:
+    private:
 	GRD_data_type ***F;
 	int x_data;
 	// if x_data is negative, the data of grid are external an they cannot be modified using
@@ -120,11 +120,11 @@ private:
 	int alloc_F(); // allocates memory for the grid data
 	void free_F(); // release the allocated memory
 	GRD_data_type bad_value(double*) const; // always returns nan
-//Interpolation functions:
+						//Interpolation functions:
 	GRD_data_type trilinear(double *r) const;
 	GRD_data_type tricubic(double *r) const;
-public:
-//Get pointers to some class members:
+    public:
+	//Get pointers to some class members:
 	const unsigned int* get_N();
 	const float* get_L();
 	const double* get_r0();
@@ -135,23 +135,23 @@ public:
 	const double (*get_A_())[3];
 	int isnotorthogonal(); // returns nonortho value
 
-//Generates an orthogonal grid from a function fn(x,y,z). xi and xf are the
-//limits of the interval along the x axis, yi and yf along the y axis and zi
-//and zf along the z axis. dx, dy and dz are the respective step sizes.
+	//Generates an orthogonal grid from a function fn(x,y,z). xi and xf are the
+	//limits of the interval along the x axis, yi and yf along the y axis and zi
+	//and zf along the z axis. dx, dy and dz are the respective step sizes.
 	int generate_grid_from_fn(double xi, double yi, double zi, double xf, double yf, double zf, double dx, double dy, double dz, double (*fn)(double x, double y, double z));
-//Get a grid point value
+	//Get a grid point value
 	GRD_data_type get_grid_value(unsigned int i, unsigned int j, unsigned int k);
-//Calculate a value at position (x, y, z) by interpolating the grid values.
-//This function don't work with subgrids.
+	//Calculate a value at position (x, y, z) by interpolating the grid values.
+	//This function don't work with subgrids.
 	GRD_data_type interpolated_value(double x, double y, double z);
-//Select the interpolation type, 1 for trilinear and 3 for tricubic.
+	//Select the interpolation type, 1 for trilinear and 3 for tricubic.
 	int set_interpolation(int i);
 
-//Modifying the grid parameters:
+	//Modifying the grid parameters:
 	/******************************************************************
-	set_grid_dimensions sets the new dimensions of a grid data. It overrides the effect of
-	the other functions that modify the grid parameters. Nx, Ny and Nz are the number of
-	grid points in each dimension. It returns 0 if memory allocation was successful.*/
+	  set_grid_dimensions sets the new dimensions of a grid data. It overrides the effect of
+	  the other functions that modify the grid parameters. Nx, Ny and Nz are the number of
+	  grid points in each dimension. It returns 0 if memory allocation was successful.*/
 	int set_grid_dimensions(unsigned int Nx, unsigned int Ny, unsigned int Nz);
 	void set_grid_value(unsigned int i, unsigned int j, unsigned int k, GRD_data_type value); // set a grid point value
 	void set_ratio_aspect(double rx, double ry, double rz); // modifies d and L
@@ -161,75 +161,75 @@ public:
 	void delete_grid_data(); // Delete the internal grid data
 
 	/******************************************************************
-	set_data_pointer creates internal pointers that point to the external data array. data
-	must be stored with the nested inner loop running from i = 0 to Nx - 1 and the outer
-	loop from k = 0 to Nz - 1. The data content cannot be modified using class functions.
-	It returns 0 if memory allocation of internal pointers was successful.*/
+	  set_data_pointer creates internal pointers that point to the external data array. data
+	  must be stored with the nested inner loop running from i = 0 to Nx - 1 and the outer
+	  loop from k = 0 to Nz - 1. The data content cannot be modified using class functions.
+	  It returns 0 if memory allocation of internal pointers was successful.*/
 	int set_data_pointer(unsigned int Nx, unsigned int Ny, unsigned int Nz, GRD_data_type* data);
 
-// Managing subgrids:
+	// Managing subgrids:
 	/******************************************************************
-	The grid can contain several subgrids that use the same data. The add_subgrid function
-	make a subgrid and stores it in an internal array (the subgrids do not contain data,
-	only pointers to the main grid data). The input parameters of the function are the three
-	indices of the origin grid point, the number of points in each dimension and the index
-	step in each dimension. The function returns 0 if the subgrid was successfully added,
-	-1 for wrong input parameters and -2 for error in memory allocation. */
+	  The grid can contain several subgrids that use the same data. The add_subgrid function
+	  make a subgrid and stores it in an internal array (the subgrids do not contain data,
+	  only pointers to the main grid data). The input parameters of the function are the three
+	  indices of the origin grid point, the number of points in each dimension and the index
+	  step in each dimension. The function returns 0 if the subgrid was successfully added,
+	  -1 for wrong input parameters and -2 for error in memory allocation. */
 	int add_subgrid(unsigned int Oi, unsigned int Oj, unsigned int Ok,
-					unsigned int Ni, unsigned int Nj, unsigned int Nk,
-					unsigned int Si, unsigned int Sj, unsigned int Sk);
+		unsigned int Ni, unsigned int Nj, unsigned int Nk,
+		unsigned int Si, unsigned int Sj, unsigned int Sk);
 	void clear_subgrid(); // erase all subgrids
 	grid3d *get_subgrid(unsigned int i); // returns a pointer to the subgrid i
 	void del_subgrid(unsigned int i); // delete the subgrid i
 	unsigned int subgrid_size(); // returns the number of subgrids
 
-//Reading grid data from files:
+	//Reading grid data from files:
 	/******************************************************************
-	The functions returns zero when succeeds. If the file could not be opened or the data
-	does not match the format, the return value is -1. If a memory error occurred, the
-	return value is -2. A return value of -4 means that the data read may be incomplete. */
+	  The functions returns zero when succeeds. If the file could not be opened or the data
+	  does not match the format, the return value is -1. If a memory error occurred, the
+	  return value is -2. A return value of -4 means that the data read may be incomplete. */
 	/******************************************************************
-	read_grd reads a *.grd file from the DMol3 program.*/
+	  read_grd reads a *.grd file from the DMol3 program.*/
 	int read_grd(const char *filename);
 
 	/** read_grd_binary reads a file with an internal binary format */
 	int read_grd_binary(const char *filename);
 	/******************************************************************
-	read_scanfiles reads a set of files that contain a slab of res*res scan data points,
-	the data points are read as unsigned short int (if order is different from 0, the
-	bytes of the unsigned short are exchanged). The filename must end with a number, and
-	the function reads all files with end number greater or equal to filename.
-	(Some datasets: http://www.graphics.stanford.edu/data/voldata/voldata.html)*/
+	  read_scanfiles reads a set of files that contain a slab of res*res scan data points,
+	  the data points are read as unsigned short int (if order is different from 0, the
+	  bytes of the unsigned short are exchanged). The filename must end with a number, and
+	  the function reads all files with end number greater or equal to filename.
+	  (Some datasets: http://www.graphics.stanford.edu/data/voldata/voldata.html)*/
 	int read_scanfiles(const char *filename, unsigned int res, int order);
 
 	/******************************************************************
-	read_raw_file reads a file that contains integer (8, 16 or 32 bits) or float (or double)
-	data points. byte is the number of bytes of the integer (1, 2 or 4), or of the float (4
-	or 8). If the data is big endian, byte must be negative (only for integers). The vector
-	n[3] contains the number of points in each dimension. The size of file must be
-	abs(byte)*n[0]*n[1]*n[2].*/
+	  read_raw_file reads a file that contains integer (8, 16 or 32 bits) or float (or double)
+	  data points. byte is the number of bytes of the integer (1, 2 or 4), or of the float (4
+	  or 8). If the data is big endian, byte must be negative (only for integers). The vector
+	  n[3] contains the number of points in each dimension. The size of file must be
+	  abs(byte)*n[0]*n[1]*n[2].*/
 	int read_raw_file(const char *filename, unsigned int *n, int byte, int isfloat = 0);
 
 	/******************************************************************
-	read_dat_file reads a dat file. The function returns 0 when succeeds.
-	http://www.cg.tuwien.ac.at/research/vis/datasets/*/
+	  read_dat_file reads a dat file. The function returns 0 when succeeds.
+http://www.cg.tuwien.ac.at/research/vis/datasets/*/
 	int read_dat_file(const char *filename);
 
 	/******************************************************************
-	save the grid points values in a raw data file of MC33_real (float or double). The
-	function returns 0 when succeeds.*/
+	  save the grid points values in a raw data file of MC33_real (float or double). The
+	  function returns 0 when succeeds.*/
 	int save_raw_file(const char *filename);
 
 	grid3d();
 	// Copy constructor
 	grid3d(const grid3d &);
 	~grid3d();
-friend MC33;
+	friend MC33;
 };
 
 template <class T>
 struct MC33_v3 {
-	T v[3];
+    T v[3];
 };
 
 /* The class surface contains the data of a isosurface. The isovalue is iso, the
@@ -238,20 +238,20 @@ contains the vertex coordinates, the vector T contains the triangle indices, The
 vector N contains the normal coordinates (one normal for each vertex), and the
 color vector contains the color index of each point.*/
 class surface {
-private:
+    private:
 	unsigned int nV, nT;
 	std::vector<MC33_v3<unsigned int>> T;
 	std::vector<MC33_v3<MC33_real>> V;
 	std::vector<MC33_v3<float>> N;
 	std::vector<int> color;
 	MC33_real iso;
-public:
+    public:
 	union {
-		long long unsigned int ul;
-		int i[3];
-		char c[12];
-		float f[3];
-		double df;
+	    long long unsigned int ul;
+	    int i[3];
+	    char c[12];
+	    float f[3];
+	    double df;
 	} user; // user data
 	MC33_real get_isovalue(); // returns the isovalue
 	unsigned int get_num_vertices(); // gets the number of vertices
@@ -265,18 +265,18 @@ public:
 	void setColor(unsigned int n, unsigned char *pcolor);
 
 	/******************************************************************
-	Saves all the surface *S data (in binary format) to a "filename" file. The
-	return value is 0 if the call succeeds, else -1.*/
+	  Saves all the surface *S data (in binary format) to a "filename" file. The
+	  return value is 0 if the call succeeds, else -1.*/
 	int save_bin(const char *filename);
 
 	/******************************************************************
-	Saves all the surface *S data (in plain text format) to a "filename" file.
-	The return value is 0 if the call succeeds, else -1.*/
+	  Saves all the surface *S data (in plain text format) to a "filename" file.
+	  The return value is 0 if the call succeeds, else -1.*/
 	int save_txt(const char *filename);
 
 	/******************************************************************
-	Reads (from a "filename" file) the surface data stored in binary format.
-	The return value is 0 if the call succeeds, else -1.*/
+	  Reads (from a "filename" file) the surface data stored in binary format.
+	  The return value is 0 if the call succeeds, else -1.*/
 	int read_bin(const char *filename);
 
 	/* Draw the surface */
@@ -292,7 +292,7 @@ public:
 	void adjustvectorlenght();
 
 	surface();
-friend MC33;
+	friend MC33;
 };
 
 /* Marching cubes 33 class.
@@ -302,7 +302,7 @@ same MC33 object, this function must be called again.
 The function calculate_isosurface fill the surface object with the isosurface data.
 */
 class MC33 {
-private:
+    private:
 	static int DefaultColor;
 	surface *S;
 	//Auxiliary grid variables
@@ -317,11 +317,11 @@ private:
 	//Other auxiliary variables
 	int memoryfault;
 	unsigned int di; // for subgrids, index step for inner loop
-	// temporary structures that store the indexes of triangle vertices:
+			 // temporary structures that store the indexes of triangle vertices:
 	unsigned int **Dx, **Dy, **Ux, **Uy, **Lz;
 	MC33_real *v;
 	const unsigned short int table[2310]; // Triangle pattern look up table
-	//Procedures
+					      //Procedures
 	int face_tests(int *, int) const;
 	int face_test1(int) const;
 	int interior_test(int, int) const;
@@ -331,7 +331,7 @@ private:
 	int init_temp_isosurface();
 	void free_temp_D_U();
 	void clear_temp_isosurface();
-public:
+    public:
 	// Set the color of the next isosurface
 	void set_default_surface_color(unsigned char *color);
 	// set the grid parameters:
@@ -340,7 +340,7 @@ public:
 	// Calculate the isosurface with isovalue iso and store the data in the surface Sf:
 	int calculate_isosurface(surface &Sf, MC33_real iso);
 	/* Return the size in bytes of an isosurface with out calculate it (nV and nT are
-	the number of vertices and triangles):*/
+	   the number of vertices and triangles):*/
 	std::size_t size_of_isosurface(MC33_real iso, unsigned int &nV, unsigned int &nT);
 	// Return the size in bytes of an isosurface with out calculate it:
 	std::size_t size_of_isosurface(MC33_real iso);
@@ -358,63 +358,63 @@ int MC33::DefaultColor = 0xff5c5c5c;//gray RGBA color as unsigned char[3], 0xAAB
 #define GL_MC33_real GL_FLOAT
 #endif
 void surface::draw() {
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
 
-	glVertexPointer(3, GL_MC33_real, 0, &V[0]);
-	glNormalPointer(GL_FLOAT, 0, &N[0]);
-	glColorPointer(4, GL_UNSIGNED_BYTE, 0, &color[0]);//rgb alpha
+    glVertexPointer(3, GL_MC33_real, 0, &V[0]);
+    glNormalPointer(GL_FLOAT, 0, &N[0]);
+    glColorPointer(4, GL_UNSIGNED_BYTE, 0, &color[0]);//rgb alpha
 
-	glDrawElements(GL_TRIANGLES, 3*nT, GL_UNSIGNED_INT, &T[0]);
+    glDrawElements(GL_TRIANGLES, 3*nT, GL_UNSIGNED_INT, &T[0]);
 
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_COLOR_ARRAY);
+    glDisableClientState(GL_NORMAL_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 void surface::drawdraft() {
-	glDisable(GL_LIGHTING);
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
+    glDisable(GL_LIGHTING);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
 
-	glVertexPointer(3, GL_MC33_real, 12*sizeof(MC33_real), &V[0]);
-	glColorPointer(3, GL_UNSIGNED_BYTE, 16, &color[0]);//rgb
+    glVertexPointer(3, GL_MC33_real, 12*sizeof(MC33_real), &V[0]);
+    glColorPointer(3, GL_UNSIGNED_BYTE, 16, &color[0]);//rgb
 
-	glDrawArrays(GL_POINTS, 0, nV>>2);
+    glDrawArrays(GL_POINTS, 0, nV>>2);
 
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glEnable(GL_LIGHTING);
+    glDisableClientState(GL_COLOR_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glEnable(GL_LIGHTING);
 }
 #endif
 
 //c = Ab, A is a 3x3 upper triangular matrix. If t != 0, A is transposed.
 template<typename T> void T_multTSA_b(const double (*A)[3], T *b, T *c, int t) {
-	if (t) {
-		c[2] = A[0][2]*b[0] + A[1][2]*b[1] + A[2][2]*b[2];
-		c[1] = A[0][1]*b[0] + A[1][1]*b[1];
-		c[0] = A[0][0]*b[0];
-	} else {
-		c[0] = A[0][0]*b[0] + A[0][1]*b[1] + A[0][2]*b[2];
-		c[1] = A[1][1]*b[1] + A[1][2]*b[2];
-		c[2] = A[2][2]*b[2];
-	}
+    if (t) {
+	c[2] = A[0][2]*b[0] + A[1][2]*b[1] + A[2][2]*b[2];
+	c[1] = A[0][1]*b[0] + A[1][1]*b[1];
+	c[0] = A[0][0]*b[0];
+    } else {
+	c[0] = A[0][0]*b[0] + A[0][1]*b[1] + A[0][2]*b[2];
+	c[1] = A[1][1]*b[1] + A[1][2]*b[2];
+	c[2] = A[2][2]*b[2];
+    }
 }
 //Performs the multiplication of the matrix A and the vector b: c = Ab. If t != 0, A is transposed.
 template<typename T> void T_multA_b(const double (*A)[3], T *b, T *c, int t) {
-	double u,v;
-	if (t) {
-		u = A[0][0]*b[0] + A[1][0]*b[1] + A[2][0]*b[2];
-		v = A[0][1]*b[0] + A[1][1]*b[1] + A[2][1]*b[2];
-		c[2] = A[0][2]*b[0] + A[1][2]*b[1] + A[2][2]*b[2];
-	} else {
-		u = A[0][0]*b[0] + A[0][1]*b[1] + A[0][2]*b[2];
-		v = A[1][0]*b[0] + A[1][1]*b[1] + A[1][2]*b[2];
-		c[2] = A[2][0]*b[0] + A[2][1]*b[1] + A[2][2]*b[2];
-	}
-	c[0] = u;
-	c[1] = v;
+    double u,v;
+    if (t) {
+	u = A[0][0]*b[0] + A[1][0]*b[1] + A[2][0]*b[2];
+	v = A[0][1]*b[0] + A[1][1]*b[1] + A[2][1]*b[2];
+	c[2] = A[0][2]*b[0] + A[1][2]*b[1] + A[2][2]*b[2];
+    } else {
+	u = A[0][0]*b[0] + A[0][1]*b[1] + A[0][2]*b[2];
+	v = A[1][0]*b[0] + A[1][1]*b[1] + A[1][2]*b[2];
+	c[2] = A[2][0]*b[0] + A[2][1]*b[1] + A[2][2]*b[2];
+    }
+    c[0] = u;
+    c[1] = v;
 }
 
 void (*multAbf)(const double (*)[3], MC33_real *, MC33_real *, int);
@@ -430,4 +430,13 @@ void (*multAb)(const double (*)[3], double *, double *, int) = T_multA_b;
 #endif // compiling_libMC33
 
 #endif // MC33_h_
+
+// Local Variables:
+// tab-width: 8
+// mode: C++
+// c-basic-offset: 4
+// indent-tabs-mode: t
+// c-file-style: "stroustrup"
+// End:
+// ex: shiftwidth=4 tabstop=8
 
