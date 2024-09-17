@@ -99,31 +99,12 @@ versa, respectively. If the grid is periodic (is infinitely repeated along each
 dimension) the flag periodic must be different from 0.
 */
 class grid3d {
-    private:
-	GRD_data_type ***F;
-	int x_data;
-	// if x_data is negative, the data of grid are external an they cannot be modified using
-	// the member functions of this class. If it is positive, the grid data is managed by the
-	// functions of this class. In the subgrids x_data is equal to the inner index step.
-	int periodic; // to work with periodical grids.
-	double r0[3], d[3]; // grid origin coordinates, distances between grid points
-	unsigned int N[3];
-	float L[3]; // size of the grid axes
-	char title[160];
-	grid3d **subgrid;
-	unsigned int nsg, maxnsg; // for subgrids
-	GRD_data_type (grid3d::*interpolation)(double*) const; // pointer to interpolation function
-	int nonortho;
-	float Ang[3]; // angles between grid axes.
-	double _A[3][3], A_[3][3];
-	void update_matrices(); // set _A and A_ by using Ang
-	int alloc_F(); // allocates memory for the grid data
-	void free_F(); // release the allocated memory
-	GRD_data_type bad_value(double*) const; // always returns nan
-						//Interpolation functions:
-	GRD_data_type trilinear(double *r) const;
-	GRD_data_type tricubic(double *r) const;
     public:
+	grid3d();
+	// Copy constructor
+	grid3d(const grid3d &);
+	~grid3d();
+
 	//Get pointers to some class members:
 	const unsigned int* get_N();
 	const float* get_L();
@@ -220,10 +201,31 @@ http://www.cg.tuwien.ac.at/research/vis/datasets/*/
 	  function returns 0 when succeeds.*/
 	int save_raw_file(const char *filename);
 
-	grid3d();
-	// Copy constructor
-	grid3d(const grid3d &);
-	~grid3d();
+    private:
+	GRD_data_type ***F;
+	int x_data;
+	// if x_data is negative, the data of grid are external an they cannot be modified using
+	// the member functions of this class. If it is positive, the grid data is managed by the
+	// functions of this class. In the subgrids x_data is equal to the inner index step.
+	int periodic; // to work with periodical grids.
+	double r0[3], d[3]; // grid origin coordinates, distances between grid points
+	unsigned int N[3];
+	float L[3]; // size of the grid axes
+	char title[160];
+	grid3d **subgrid;
+	unsigned int nsg, maxnsg; // for subgrids
+	GRD_data_type (grid3d::*interpolation)(double*) const; // pointer to interpolation function
+	int nonortho;
+	float Ang[3]; // angles between grid axes.
+	double _A[3][3], A_[3][3];
+	void update_matrices(); // set _A and A_ by using Ang
+	int alloc_F(); // allocates memory for the grid data
+	void free_F(); // release the allocated memory
+	GRD_data_type bad_value(double*) const; // always returns nan
+						//Interpolation functions:
+	GRD_data_type trilinear(double *r) const;
+	GRD_data_type tricubic(double *r) const;
+
 	friend MC33;
 };
 
@@ -238,13 +240,6 @@ contains the vertex coordinates, the vector T contains the triangle indices, The
 vector N contains the normal coordinates (one normal for each vertex), and the
 color vector contains the color index of each point.*/
 class surface {
-    private:
-	unsigned int nV, nT;
-	std::vector<MC33_v3<unsigned int>> T;
-	std::vector<MC33_v3<MC33_real>> V;
-	std::vector<MC33_v3<float>> N;
-	std::vector<int> color;
-	MC33_real iso;
     public:
 	union {
 	    long long unsigned int ul;
@@ -292,6 +287,14 @@ class surface {
 	void adjustvectorlenght();
 
 	surface();
+    private:
+	unsigned int nV, nT;
+	std::vector<MC33_v3<unsigned int>> T;
+	std::vector<MC33_v3<MC33_real>> V;
+	std::vector<MC33_v3<float>> N;
+	std::vector<int> color;
+	MC33_real iso;
+
 	friend MC33;
 };
 
@@ -302,6 +305,27 @@ same MC33 object, this function must be called again.
 The function calculate_isosurface fill the surface object with the isosurface data.
 */
 class MC33 {
+    public:
+	MC33();
+	~MC33();
+
+	// Set the color of the next isosurface
+	void set_default_surface_color(unsigned char *color);
+
+	// set the grid parameters:
+	int set_grid3d(grid3d *G);
+	int set_grid3d(grid3d &G);
+
+	// Calculate the isosurface with isovalue iso and store the data in the surface Sf:
+	int calculate_isosurface(surface &Sf, MC33_real iso);
+
+	/* Return the size in bytes of an isosurface with out calculate it (nV and nT are
+	   the number of vertices and triangles):*/
+	std::size_t size_of_isosurface(MC33_real iso, unsigned int &nV, unsigned int &nT);
+
+	// Return the size in bytes of an isosurface with out calculate it:
+	std::size_t size_of_isosurface(MC33_real iso);
+
     private:
 	static int DefaultColor;
 	surface *S;
@@ -331,21 +355,7 @@ class MC33 {
 	int init_temp_isosurface();
 	void free_temp_D_U();
 	void clear_temp_isosurface();
-    public:
-	// Set the color of the next isosurface
-	void set_default_surface_color(unsigned char *color);
-	// set the grid parameters:
-	int set_grid3d(grid3d *G);
-	int set_grid3d(grid3d &G);
-	// Calculate the isosurface with isovalue iso and store the data in the surface Sf:
-	int calculate_isosurface(surface &Sf, MC33_real iso);
-	/* Return the size in bytes of an isosurface with out calculate it (nV and nT are
-	   the number of vertices and triangles):*/
-	std::size_t size_of_isosurface(MC33_real iso, unsigned int &nV, unsigned int &nT);
-	// Return the size in bytes of an isosurface with out calculate it:
-	std::size_t size_of_isosurface(MC33_real iso);
-	MC33();
-	~MC33();
+
 };
 
 #ifndef compiling_libMC33
