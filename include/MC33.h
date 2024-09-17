@@ -15,7 +15,6 @@
 #undef integer_GRD
 #undef GRD_type_size
 #undef MC33_double_precision
-#undef GRD_orthogonal
 #endif
 
 /********************************** USAGE ************************************/
@@ -49,7 +48,6 @@
 #ifndef MC33_double_precision
 #define MC33_double_precision 0 // 1 means double type for MC33 class members, used only with double or size 4 integer grid data
 #endif
-//#define GRD_orthogonal // If defined, the library only works with orthogonal grids.
 /*****************************************************************************/
 #ifdef integer_GRD
 #if GRD_type_size == 4
@@ -99,9 +97,6 @@ dimension), nonortho has a value of 1 when the grid is inclined else 0. _A and A
 are the matrices that transform from inclined to orthogonal coordinates and vice
 versa, respectively. If the grid is periodic (is infinitely repeated along each
 dimension) the flag periodic must be different from 0.
-
-In this library, if GRD_orthogonal is defined, then nonortho, _A and A_ can be
-removed from this structure, and it only works with orthogonal grids.
 */
 class grid3d {
 private:
@@ -118,12 +113,10 @@ private:
 	grid3d **subgrid;
 	unsigned int nsg, maxnsg; // for subgrids
 	GRD_data_type (grid3d::*interpolation)(double*) const; // pointer to interpolation function
-#ifndef GRD_orthogonal
 	int nonortho;
 	float Ang[3]; // angles between grid axes.
 	double _A[3][3], A_[3][3];
 	void update_matrices(); // set _A and A_ by using Ang
-#endif
 	int alloc_F(); // allocates memory for the grid data
 	void free_F(); // release the allocated memory
 	GRD_data_type bad_value(double*) const; // always returns nan
@@ -137,12 +130,10 @@ public:
 	const double* get_r0();
 	const double* get_d();
 	const char* get_title();
-#ifndef GRD_orthogonal
 	const float* get_Ang();
 	const double (*get__A())[3];
 	const double (*get_A_())[3];
 	int isnotorthogonal(); // returns nonortho value
-#endif
 
 //Generates an orthogonal grid from a function fn(x,y,z). xi and xf are the
 //limits of the interval along the x axis, yi and yf along the y axis and zi
@@ -165,9 +156,7 @@ public:
 	void set_grid_value(unsigned int i, unsigned int j, unsigned int k, GRD_data_type value); // set a grid point value
 	void set_ratio_aspect(double rx, double ry, double rz); // modifies d and L
 	void set_r0(double x, double y, double z); // modifies r0
-#ifndef GRD_orthogonal
 	void set_Ang(float angle_bc, float angle_ca, float angle_ab); // modifies Ang
-#endif
 	void set_title(const char *s); // copy the c style string s to title
 	void delete_grid_data(); // Delete the internal grid data
 
@@ -320,9 +309,7 @@ private:
 	unsigned int nx, ny, nz;
 	const GRD_data_type ***F;
 	MC33_real MC_O[3], MC_D[3], ca, cb;
-#ifndef GRD_orthogonal
 	double _A[3][3], A_[3][3];
-#endif
 	//Assign memory for the vertex r[3], normal (r + 3)[3]. The return value is
 	//the new vertex label.
 	std::function<unsigned int(MC33_real*)> store_point;
@@ -402,7 +389,6 @@ void surface::drawdraft() {
 }
 #endif
 
-#ifndef GRD_orthogonal
 //c = Ab, A is a 3x3 upper triangular matrix. If t != 0, A is transposed.
 template<typename T> void T_multTSA_b(const double (*A)[3], T *b, T *c, int t) {
 	if (t) {
@@ -440,7 +426,6 @@ void (*multAb)(const double (*)[3], double *, double *, int) = mult_Abf;
 #else
 void (*multAb)(const double (*)[3], double *, double *, int) = T_multA_b;
 #endif
-#endif // GRD_orthogonal
 
 #endif // compiling_libMC33
 

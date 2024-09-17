@@ -26,14 +26,12 @@ December 2021
 
 using namespace std;
 
-#ifndef GRD_orthogonal
 void setIdentMat3x3d(double (*A)[3]) {
     for (double *d = A[0] + 8; --d != A[0];)
 	d[0] = 0.0;
     for (int i = 0; i != 3; ++i)
 	A[i][i] = 1.0;
 }
-#endif
 
 //******************************************************************
 const unsigned int* grid3d::get_N() {return N;}
@@ -50,10 +48,8 @@ GRD_data_type grid3d::get_grid_value(unsigned int i, unsigned int j, unsigned in
 
 GRD_data_type grid3d::interpolated_value(double x, double y, double z) {
     double r[3] = {x - r0[0], y - r0[1], z - r0[2]};
-#ifndef GRD_orthogonal
     if(nonortho)
 	multAb(A_,r,r,0);
-#endif
     return (this->*interpolation)(r);
 }
 
@@ -161,7 +157,6 @@ GRD_data_type grid3d::tricubic(double *r) const {
 }
 
 
-#ifndef GRD_orthogonal
 const float* grid3d::get_Ang() {return Ang;}
 const double (*grid3d::get__A())[3] {return _A;}
 const double (*grid3d::get_A_())[3] {return A_;}
@@ -203,7 +198,6 @@ void grid3d::set_Ang(float angle_bc, float angle_ca, float angle_ab) {
     Ang[0] = angle_bc; Ang[1] = angle_ca; Ang[2] = angle_ab;
     update_matrices();
 }
-#endif
 
 void grid3d::set_ratio_aspect(double rx, double ry, double rz) {
     if (F) {
@@ -325,15 +319,11 @@ int grid3d::set_grid_dimensions(unsigned int Nx, unsigned int Ny, unsigned int N
 	L[i] = N[i];
 	d[i] = 1.0;
 	r0[i] = 0.0;
-#ifndef GRD_orthogonal
 	Ang[i] = 90.0f;
-#endif
     }
-#ifndef GRD_orthogonal
     nonortho = 0;
     setIdentMat3x3d(_A);
     setIdentMat3x3d(A_);
-#endif
     return 0;
 }
 
@@ -366,15 +356,11 @@ int grid3d::set_data_pointer(unsigned int Nx, unsigned int Ny, unsigned int Nz, 
 	L[i] = N[i];
 	d[i] = 1.0;
 	r0[i] = 0.0;
-#ifndef GRD_orthogonal
 	Ang[i] = 90.0f;
-#endif
     }
-#ifndef GRD_orthogonal
     nonortho = 0;
     setIdentMat3x3d(_A);
     setIdentMat3x3d(A_);
-#endif
     x_data = -1;
     return 0;
 }
@@ -452,14 +438,12 @@ int grid3d::add_subgrid(unsigned int Oi, unsigned int Oj, unsigned int Ok,
     G->d[2] = Sk*d[2];
     G->title[0] = 0;
     double d0[3] = {Oi*d[0], Oj*d[1], Ok*d[2]};
-#ifndef GRD_orthogonal
     memcpy(G->A_, A_, sizeof A_);
     memcpy(G->_A, _A, sizeof _A);
     memcpy(G->Ang, Ang, sizeof Ang);
     G->nonortho = nonortho;
     if (nonortho)
 	multAb(_A, d0, d0, 0);
-#endif
     for (int i = 0; i != 3; i++) {
 	G->r0[i] = r0[i] + d0[i];
 	G->L[i] = G->N[i]*G->d[i];
@@ -522,15 +506,11 @@ int grid3d::generate_grid_from_fn(double xi, double yi, double zi, double xf, do
     }
     for (int i = 0; i != 3; ++i) {
 	L[i] = N[i]*d[i];
-#ifndef GRD_orthogonal
 	Ang[i] = 90.0f;
-#endif
     }
-#ifndef GRD_orthogonal
     nonortho = 0;
     setIdentMat3x3d(_A);
     setIdentMat3x3d(A_);
-#endif
     return 0;
 }
 
@@ -554,9 +534,6 @@ int grid3d::read_grd(const char *filename) {
     periodic = 0;
     in.getline(title, 159);
     in.ignore(60, '\n');
-#ifdef GRD_orthogonal
-    float Ang[3];
-#endif
     in >> L[0] >> L[1] >> L[2] >> Ang[0] >> Ang[1] >> Ang[2] >> N[0] >> N[1] >> N[2];
     in >> order >> xi[0] >> cs >> xi[1] >> cs >> xi[2];
     in.ignore(20, '\n');
@@ -568,9 +545,7 @@ int grid3d::read_grd(const char *filename) {
     }
     periodic = (xi[0] == 0)|((xi[1] == 0)<<1)|((xi[2] == 0)<<2);
 
-#ifndef GRD_orthogonal
     update_matrices();
-#endif
 
     if (alloc_F()) {
 	free_F();
@@ -616,7 +591,6 @@ int grid3d::read_grd_binary(const char* filename) {
     in.read(reinterpret_cast<char*>(L), sizeof L);
     in.read(reinterpret_cast<char*>(r0), sizeof r0);
     in.read(reinterpret_cast<char*>(d), sizeof d);
-#ifndef GRD_orthogonal
     in.read(reinterpret_cast<char*>(&nonortho), sizeof(int));
     if (nonortho) {
 	in.read(reinterpret_cast<char*>(Ang),3*sizeof(float));
@@ -627,11 +601,6 @@ int grid3d::read_grd_binary(const char* filename) {
 	setIdentMat3x3d(_A);
 	setIdentMat3x3d(A_);
     }
-#else
-    in.read(reinterpret_cast<char*>(&i), sizeof(int));
-    if (i)
-	in.ignore(3*sizeof(float) + 18*sizeof(double));
-#endif
     periodic = (r0[0] == 0 && r0[1] == 0 && r0[2] == 0? 7: 0);
     if (alloc_F()) {
 	free_F();
@@ -666,9 +635,7 @@ int grid3d::read_scanfiles(const char *filename, unsigned int res, int order) {
     int m, k = -1;
     unsigned short int n;
     free_F();
-#ifndef GRD_orthogonal
     nonortho = 0;
-#endif
     periodic = 0;
     r0[0] = r0[1] = r0[2] = 0.0;
     for (i = 0; i != 2; ++i) {
@@ -744,10 +711,8 @@ int grid3d::read_scanfiles(const char *filename, unsigned int res, int order) {
 	for (i = 0; i != j; ++i)
 	    swap(F[i], F[k - i]);
     }
-#ifndef GRD_orthogonal
     setIdentMat3x3d(_A);
     setIdentMat3x3d(A_);
-#endif
     return m;
 }
 
@@ -774,9 +739,7 @@ int grid3d::read_raw_file(const char *filename, unsigned int *n, int byte, int i
     if (byte == -1) byte = 1;
     if (n[0] == 0 || n[1] == 0 || n[2] == 0)
 	return -1; // bad input parameters
-#ifndef GRD_orthogonal
     nonortho = 0;
-#endif
     periodic = 0;
     r0[0] = r0[1] = r0[2] = 0.0;
     for (int h = 0; h != 3; ++h) {
@@ -841,10 +804,8 @@ int grid3d::read_raw_file(const char *filename, unsigned int *n, int byte, int i
 			F[k][j][i] = GRD_data_type(ui);
 		    }
 	}
-#ifndef GRD_orthogonal
     setIdentMat3x3d(_A);
     setIdentMat3x3d(A_);
-#endif
     return (in.good()? 0: -4);
 }
 
@@ -859,9 +820,7 @@ int grid3d::read_dat_file(const char *filename) {
     ifstream in(filename, ios::binary);
     if (!in)
 	return -1;
-#ifndef GRD_orthogonal
     nonortho = 0;
-#endif
     periodic = 0;
     r0[0] = r0[1] = r0[2] = 0.0;
     for (int h = 0; h != 3; ++h)
@@ -884,10 +843,8 @@ int grid3d::read_dat_file(const char *filename) {
 		in.read(reinterpret_cast<char*>(&n), sizeof(short int));
 		F[nz][j][i] = n;
 	    }
-#ifndef GRD_orthogonal
     setIdentMat3x3d(_A);
     setIdentMat3x3d(A_);
-#endif
     return (in.good()? 0: -4);
 }
 

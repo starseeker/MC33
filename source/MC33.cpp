@@ -1306,7 +1306,6 @@ int MC33::set_grid3d(grid3d &G) {
     nx = G.N[0];
     ny = G.N[1];
     nz = G.N[2];
-#ifndef GRD_orthogonal
     if (G.nonortho) {
 	store_point = [this] (MC33_real* r) {
 	    code_in_define_part01
@@ -1322,7 +1321,6 @@ int MC33::set_grid3d(grid3d &G) {
 		A_[j][i] = G.A_[j][i]/G.d[j];
 	    }
     } else
-#endif
 	if (G.d[0] != G.d[1] || G.d[1] != G.d[2]) {
 	    ca = G.d[2]/G.d[0];
 	    cb = G.d[2]/G.d[1];

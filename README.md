@@ -31,12 +31,7 @@ There are 4 options that can be modified before compiling the library. You can d
 	#define size_type_GRD 1 // the data type is unsigned char
 	```
 
-2. If you do not use inclined grids, you can define GRD_orthogonal (MC33.h):
-	```c
-	#define GRD_orthogonal
-	```
-
-3. By default the members of MC33 class are float. The member can be changed to double by defining MC33_double_precision to 1 (MC33.h). This option is also enabled by defining size_type_GRD to 8. And it is disabled if size_type_GRD is defined to 1 or 2 when integer_GRD is defined. The vertex array type of surface class is also modified when using this option.
+2. By default the members of MC33 class are float. The member can be changed to double by defining MC33_double_precision to 1 (MC33.h). This option is also enabled by defining size_type_GRD to 8. And it is disabled if size_type_GRD is defined to 1 or 2 when integer_GRD is defined. The vertex array type of surface class is also modified when using this option.
 	```c
 	#define MC33_double_precision 1 // double type for MC33 class members
 	```
