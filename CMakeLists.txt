@@ -4,9 +4,40 @@ cmake_minimum_required(VERSION 3.18)
 # Set CMake project name
 project(MC33)
 
-add_library(MC33++ SHARED source/libMC33++.cpp)
-set_property(TARGET MC33++ APPEND PROPERTY COMPILE_DEFINITIONS "MC33_DLL_EXPORTS")
-set_property(TARGET MC33++ APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS "MC33_DLL_IMPORTS")
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(BT)
+if (NOT DEFINED BUILD_SHARED_LIBS OR BUILD_SHARED_LIBS)
+  add_library(MC33 SHARED source/libMC33++.cpp)
+  set_property(TARGET MC33 APPEND PROPERTY COMPILE_DEFINITIONS "MC33_DLL_EXPORTS")
+  set_property(TARGET MC33 APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS "MC33_DLL_IMPORTS")
+  set(BT ${BT} MC33)
+endif()
+
+if (NOT DEFINED BUILD_STATIC_LIBS OR BUILD_STATIC_LIBS)
+  add_library(MC33static STATIC source/libMC33++.cpp)
+  set(BT ${BT} MC33static)
+endif ()
+
+include(CheckCXXCompilerFlag)
+set(CHKFLAGS -Ofast -m64 -Wall -Wextra -funroll-loops)
+
+function(apply_flag tname cf)
+  string(REPLACE "-" "_" cfname "${cf}")
+  string(TOUPPER "${cfname}" cfuname)
+  check_cxx_compiler_flag(${cf} ${cfuname}_COMPILER_FLAG)
+  if (${cfuname}_COMPILER_FLAG)
+    target_compile_options(${tname} PRIVATE "${cf}")
+  endif ()
+endfunction()
+
+foreach(tgt ${BT})
+  foreach(cf ${CHKFLAGS})
+    apply_flag(${tgt} ${cf})
+  endforeach()
+endforeach(tgt ${BT})
 
 # Local Variables:
 # tab-width: 8
